@@ -19,9 +19,15 @@ I implemented the Python safety node to:
 - compute instantaneous TTC
 - publish a brake command to `/drive` when TTC falls below threshold
 
-## Testing Notes
-The package was built successfully locally and inside the simulator container.
+## Testing Performed
+- built the package locally
+- built the package inside the simulator container
+- confirmed simulator topics `/scan`, `/ego_racecar/odom`, and `/drive`
+- launched the simulator bridge successfully
+- launched teleop and recorded final testing evidence
 
-During testing, the simulator topics `/scan`, `/ego_racecar/odom`, and `/drive` were observed.
+## Video
+Screencast link: https://drive.google.com/file/d/1Nl1QUkd1A7NZHsw4RP3RjCw14-aKtDKM/view?usp=sharing
 
+## Limitation Encountered
 Final runtime validation in this VM environment was affected by simulator/container deserialization and stability issues during the last stage of testing.

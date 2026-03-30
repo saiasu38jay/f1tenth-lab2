@@ -1,12 +1,12 @@
 #include "rclcpp/rclcpp.hpp"
-/// CHECK: include needed ROS msg type headers and libraries
+/// Make a ROS aligned message to allow the user understand the process
 #include "sensor_msgs/msg/laser_scan.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "ackermann_msgs/msg/ackermann_drive_stamped.hpp"
 
 
 class Safety : public rclcpp::Node {
-// The class that handles emergency braking
+// The class that handles emergency braking is been provided above 
 
 public:
     Safety() : Node("safety_node")

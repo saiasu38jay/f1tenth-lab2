@@ -12,10 +12,6 @@ from ackermann_msgs.msg import AckermannDriveStamped
 
 
 class SafetyNode(Node):
-    """
-    Automatic Emergency Braking node using instantaneous Time to Collision (iTTC).
-    """
-
     def __init__(self):
         super().__init__('safety_node')
 

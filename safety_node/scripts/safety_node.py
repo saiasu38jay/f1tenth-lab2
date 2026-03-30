@@ -4,6 +4,7 @@ import numpy as np
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
@@ -32,7 +33,7 @@ class SafetyNode(Node):
             LaserScan,
             '/scan',
             self.scan_callback,
-            10
+            qos_profile_sensor_data
         )
 
         self.odom_sub = self.create_subscription(
@@ -45,31 +46,22 @@ class SafetyNode(Node):
         self.get_logger().info('Safety node started.')
 
     def odom_callback(self, odom_msg: Odometry):
-        # Longitudinal speed of the vehicle
         self.speed = odom_msg.twist.twist.linear.x
 
     def scan_callback(self, scan_msg: LaserScan):
-        # If car is not moving forward, no need to brake
         if self.speed <= 0.0:
             return
 
         ranges = np.array(scan_msg.ranges, dtype=np.float64)
-
         angles = scan_msg.angle_min + np.arange(len(ranges)) * scan_msg.angle_increment
 
-        # Clean up invalid scan values
         valid = np.isfinite(ranges) & (ranges > self.min_valid_range)
         if not np.any(valid):
             return
 
-        # Range rate approximation using current forward speed projected onto each beam
-        # r_dot = -v * cos(theta) when approaching an obstacle in front
         range_rates = -self.speed * np.cos(angles)
-
-        # Only beams with negative range rate are actually closing in
         closing_rates = np.maximum(-range_rates, 0.0)
 
-        # Prevent divide-by-zero
         ittc = np.full_like(ranges, np.inf, dtype=np.float64)
         safe_mask = valid & (closing_rates > 1e-6)
         ittc[safe_mask] = ranges[safe_mask] / closing_rates[safe_mask]
